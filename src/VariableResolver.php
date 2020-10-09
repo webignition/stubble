@@ -13,9 +13,7 @@ class VariableResolver
 
     public function __construct()
     {
-        $this->unresolvedVariableDeciders[] = function () {
-            return false;
-        };
+        $this->unresolvedVariableDeciders[] = DeciderFactory::createDisallowAllDecider();
     }
 
     /**
