@@ -6,9 +6,6 @@ namespace webignition\Stubble;
 
 class VariableResolver
 {
-    private const THROW_UNRESOLVED_VARIABLE_EXCEPTIONS = true;
-    private const IGNORE_UNRESOLVED_VARIABLE_EXCEPTIONS = false;
-
     /**
      * @var callable[]
      */
@@ -38,8 +35,6 @@ class VariableResolver
      * @param array<string, string> $context
      *
      * @return string
-     *
-     * @throws UnresolvedVariableException
      */
     public static function resolveTemplateAndIgnoreUnresolvedVariables(string $template, array $context): string
     {
@@ -56,7 +51,14 @@ class VariableResolver
      */
     public function resolve(string $template, array $context): string
     {
-        return $this->doResolve($template, $context, self::THROW_UNRESOLVED_VARIABLE_EXCEPTIONS);
+        $resolvedTemplate = $this->doResolve($template, $context);
+
+        $unresolvedVariable = $this->findFirstUnresolvedVariable($resolvedTemplate);
+        if (is_string($unresolvedVariable) && false === $this->isAllowedUnresolvedVariable($unresolvedVariable)) {
+            throw new UnresolvedVariableException($unresolvedVariable, trim($template));
+        }
+
+        return $resolvedTemplate;
     }
 
     /**
@@ -64,12 +66,10 @@ class VariableResolver
      * @param array<string, string> $context
      *
      * @return string
-     *
-     * @throws UnresolvedVariableException
      */
     public function resolveAndIgnoreUnresolvedVariables(string $template, array $context): string
     {
-        return $this->doResolve($template, $context, self::IGNORE_UNRESOLVED_VARIABLE_EXCEPTIONS);
+        return $this->doResolve($template, $context);
     }
 
     public function addUnresolvedVariableDecider(callable $decider): void
@@ -80,13 +80,10 @@ class VariableResolver
     /**
      * @param string $template
      * @param array<string, string> $context
-     * @param bool $throwExceptionOnUnresolvedVariable
      *
      * @return string
-     *
-     * @throws UnresolvedVariableException
      */
-    private function doResolve(string $template, array $context, bool $throwExceptionOnUnresolvedVariable)
+    private function doResolve(string $template, array $context)
     {
         $search = [];
         $replace = [];
@@ -96,16 +93,7 @@ class VariableResolver
             $replace[] = $value;
         }
 
-        $resolvedTemplate = (string) preg_replace($search, $replace, $template);
-
-        if (true === $throwExceptionOnUnresolvedVariable) {
-            $unresolvedVariable = $this->findFirstUnresolvedVariable($resolvedTemplate);
-            if (is_string($unresolvedVariable) && false === $this->isAllowedUnresolvedVariable($unresolvedVariable)) {
-                throw new UnresolvedVariableException($unresolvedVariable, trim($template));
-            }
-        }
-
-        return $resolvedTemplate;
+        return (string) preg_replace($search, $replace, $template);
     }
 
     private function findFirstUnresolvedVariable(string $resolvedTemplate): ?string
