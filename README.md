@@ -43,7 +43,7 @@ try {
 } catch (UnresolvedVariableException $exception) {
     // Do something useful ... logging?
     $exception->getVariable(); // 'location'
-    $exception->getTemplate(); // 'Hello Jon and welcome to {{ location }}.'
+    $exception->getTemplate(); // 'Hello {{ name }} and welcome to {{ location }}.'
 }
 
 ```
