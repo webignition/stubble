@@ -22,49 +22,28 @@ class VariableResolver
     /**
      * @param string $template
      * @param array<string, string> $context
-     * @param callable[] $unresolvedVariableDeciders
+     * @param callable[] $deciders
      *
      * @return string
      *
      * @throws UnresolvedVariableException
      */
-    public static function resolveTemplate(
-        string $template,
-        array $context,
-        array $unresolvedVariableDeciders = []
-    ): string {
-        $resolver = new VariableResolver();
-        foreach ($unresolvedVariableDeciders as $decider) {
-            if (is_callable($decider)) {
-                $resolver->addUnresolvedVariableDecider($decider);
-            }
-        }
-
-        return $resolver->resolve($template, $context);
+    public static function resolveTemplate(string $template, array $context, array $deciders = []): string
+    {
+        return self::createResolver($deciders)->resolve($template, $context);
     }
 
     /**
      * @param string $template
      * @param array<string, string> $context
-     * @param callable[] $unresolvedVariableDeciders
      *
      * @return string
      *
      * @throws UnresolvedVariableException
      */
-    public static function resolveTemplateAndIgnoreUnresolvedVariables(
-        string $template,
-        array $context,
-        array $unresolvedVariableDeciders = []
-    ): string {
-        $resolver = new VariableResolver();
-        foreach ($unresolvedVariableDeciders as $decider) {
-            if (is_callable($decider)) {
-                $resolver->addUnresolvedVariableDecider($decider);
-            }
-        }
-
-        return $resolver->resolveAndIgnoreUnresolvedVariables($template, $context);
+    public static function resolveTemplateAndIgnoreUnresolvedVariables(string $template, array $context): string
+    {
+        return self::createResolver([])->resolveAndIgnoreUnresolvedVariables($template, $context);
     }
 
     /**
@@ -157,5 +136,22 @@ class VariableResolver
         }
 
         return false;
+    }
+
+    /**
+     * @param callable[] $unresolvedVariableDeciders
+     *
+     * @return self
+     */
+    private static function createResolver(array $unresolvedVariableDeciders): self
+    {
+        $resolver = new VariableResolver();
+        foreach ($unresolvedVariableDeciders as $decider) {
+            if (is_callable($decider)) {
+                $resolver->addUnresolvedVariableDecider($decider);
+            }
+        }
+
+        return $resolver;
     }
 }
