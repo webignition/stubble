@@ -163,4 +163,83 @@ class VariableResolverTest extends TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider resolveTemplateDataProvider
+     *
+     * @param string $template
+     * @param array<string, string> $context
+     * @param callable[] $unresolvedVariableDeciders
+     * @param string $expectedResolvedTemplate
+     */
+    public function testResolveTemplate(
+        string $template,
+        array $context,
+        array $unresolvedVariableDeciders,
+        string $expectedResolvedTemplate
+    ) {
+        self::assertSame(
+            $expectedResolvedTemplate,
+            VariableResolver::resolveTemplate($template, $context, $unresolvedVariableDeciders)
+        );
+    }
+
+    public function resolveTemplateDataProvider(): array
+    {
+        return [
+            'empty template, no variables' => [
+                'template' => '',
+                'context' => [],
+                'unresolvedVariableDeciders' => [],
+                'expectedResolvedTemplate' => '',
+            ],
+            'non-empty template, no variables' => [
+                'template' => 'non-empty content',
+                'context' => [],
+                'unresolvedVariableDeciders' => [],
+                'expectedResolvedTemplate' => 'non-empty content',
+            ],
+            'non-empty template, has variables' => [
+                'template' => 'Hello {{ name }}, welcome to {{ place }}.',
+                'context' => [
+                    'name' => 'Jon',
+                    'place' => 'Location',
+                ],
+                'unresolvedVariableDeciders' => [],
+                'expectedResolvedTemplate' => 'Hello Jon, welcome to Location.',
+            ],
+            'non-empty template, has variables without surrounding whitespace' => [
+                'template' => 'Hello {{name}}, welcome to {{place}}.',
+                'context' => [
+                    'name' => 'Jon',
+                    'place' => 'Location',
+                ],
+                'unresolvedVariableDeciders' => [],
+                'expectedResolvedTemplate' => 'Hello Jon, welcome to Location.',
+            ],
+            'non-empty template, has missing variables allowed by same decider' => [
+                'template' => 'Hello {{ name }}, welcome to {{ place }}.',
+                'context' => [],
+                'unresolvedVariableDeciders' => [
+                    function (string $variable) {
+                        return 'name' === $variable || 'place' === $variable;
+                    },
+                ],
+                'expectedResolvedTemplate' => 'Hello {{ name }}, welcome to {{ place }}.',
+            ],
+            'non-empty template, has missing variables allowed by different deciders' => [
+                'template' => 'Hello {{ name }}, welcome to {{ place }}.',
+                'context' => [],
+                'unresolvedVariableDeciders' => [
+                    function (string $variable) {
+                        return 'name' === $variable;
+                    },
+                    function (string $variable) {
+                        return 'place' === $variable;
+                    },
+                ],
+                'expectedResolvedTemplate' => 'Hello {{ name }}, welcome to {{ place }}.',
+            ],
+        ];
+    }
 }

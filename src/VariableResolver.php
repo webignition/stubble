@@ -19,6 +19,30 @@ class VariableResolver
     /**
      * @param string $template
      * @param array<string, string> $context
+     * @param callable[] $unresolvedVariableDeciders
+     *
+     * @return string
+     *
+     * @throws UnresolvedVariableException
+     */
+    public static function resolveTemplate(
+        string $template,
+        array $context,
+        array $unresolvedVariableDeciders = []
+    ): string {
+        $resolver = new VariableResolver();
+        foreach ($unresolvedVariableDeciders as $decider) {
+            if (is_callable($decider)) {
+                $resolver->addUnresolvedVariableDecider($decider);
+            }
+        }
+
+        return $resolver->resolve($template, $context);
+    }
+
+    /**
+     * @param string $template
+     * @param array<string, string> $context
      *
      * @return string
      *
