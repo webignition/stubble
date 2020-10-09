@@ -11,6 +11,7 @@ A minimal library to replace mustache-like variables in strings, using PHP.
 ```php
 use webignition\Stubble\VariableResolver;
 
+// Using a VariableResolver instance
 $resolver = new VariableResolver();
 
 $template = 'Hello {{ name }}!';
@@ -19,7 +20,11 @@ $context = [
 ];
 
 $resolvedTemplate = $resolver->resolve($template, $context);
-// Hello World!
+echo $resolvedTemplate; // Hello World!
+
+// Or calling statically
+$resolvedTemplate = VariableResolver::resolveTemplate($template, $context);
+echo $resolvedTemplate; // Hello World!
 ```
 
 ## Unresolved Variables
