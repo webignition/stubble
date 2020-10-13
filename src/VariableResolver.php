@@ -18,40 +18,6 @@ class VariableResolver
     /**
      * @param string $template
      * @param array<string, string> $context
-     * @param UnresolvedVariableFinder|null $unresolvedVariableFinder
-     *
-     * @return string
-     *
-     * @throws UnresolvedVariableException
-     */
-    public static function resolveTemplate(
-        string $template,
-        array $context,
-        ?UnresolvedVariableFinder $unresolvedVariableFinder = null
-    ): string {
-        $resolver = new VariableResolver($unresolvedVariableFinder);
-
-        return $resolver->resolve($template, $context);
-    }
-
-    /**
-     * @param string $template
-     * @param array<string, string> $context
-     *
-     * @return string
-     */
-    public static function resolveTemplateAndIgnoreUnresolvedVariables(string $template, array $context): string
-    {
-        $resolver = new VariableResolver(
-            new UnresolvedVariableFinder([])
-        );
-
-        return $resolver->resolveAndIgnoreUnresolvedVariables($template, $context);
-    }
-
-    /**
-     * @param string $template
-     * @param array<string, string> $context
      *
      * @return string
      *
