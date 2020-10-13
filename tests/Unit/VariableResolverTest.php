@@ -115,66 +115,6 @@ class VariableResolverTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider resolveDataProvider
-     *
-     * @param string $template
-     * @param array<string, string> $context
-     * @param string $expectedResolvedTemplate
-     * @param UnresolvedVariableFinder|null $unresolvedVariableFinder
-     */
-    public function testResolveTemplate(
-        string $template,
-        array $context,
-        string $expectedResolvedTemplate,
-        ?UnresolvedVariableFinder $unresolvedVariableFinder = null
-    ) {
-        self::assertSame(
-            $expectedResolvedTemplate,
-            VariableResolver::resolveTemplate($template, $context, $unresolvedVariableFinder)
-        );
-    }
-
-    /**
-     * @dataProvider resolveThrowsUnresolvedVariableExceptionDataProvider
-     *
-     * @param string $template
-     * @param array<string, string> $context
-     * @param string $expectedVariable
-     * @param UnresolvedVariableFinder|null $unresolvedVariableFinder
-     */
-    public function testResolveTemplateThrowsUnresolvedVariableException(
-        string $template,
-        array $context,
-        string $expectedVariable,
-        ?UnresolvedVariableFinder $unresolvedVariableFinder = null
-    ) {
-        try {
-            VariableResolver::resolveTemplate($template, $context, $unresolvedVariableFinder);
-        } catch (UnresolvedVariableException $unresolvedVariableException) {
-            $this->assertSame($expectedVariable, $unresolvedVariableException->getVariable());
-            $this->assertSame($template, $unresolvedVariableException->getTemplate());
-        }
-    }
-
-    /**
-     * @dataProvider resolveDataProvider
-     *
-     * @param string $template
-     * @param array<string, string> $context
-     * @param string $expectedResolvedTemplate
-     */
-    public function testResolveTemplateAndIgnoreUnresolvedVariables(
-        string $template,
-        array $context,
-        string $expectedResolvedTemplate
-    ) {
-        self::assertSame(
-            $expectedResolvedTemplate,
-            VariableResolver::resolveTemplateAndIgnoreUnresolvedVariables($template, $context)
-        );
-    }
-
     public function resolveDataProvider(): array
     {
         return [

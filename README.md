@@ -21,10 +21,6 @@ $context = [
 
 $resolvedTemplate = $resolver->resolve($template, $context);
 echo $resolvedTemplate; // Hello World!
-
-// Or calling statically
-$resolvedTemplate = VariableResolver::resolveTemplate($template, $context);
-echo $resolvedTemplate; // Hello World!
 ```
 
 ## Unresolved Variables
@@ -58,21 +54,26 @@ try {
 
 You may expect unresolved variables in resolved templates, for example if the content being generated is itself a template for use elsewhere.
 
-A resolver instance can have one or more unresolved variable deciders, with each decider being a callable returning a boolean. The first decider to return true allows an unresolved variable to be present without an exception being thrown.
+Using a `UnresolvedVariableFinder`, a resolver can make use of one or more unresolved variable deciders, 
+with each decider being a callable returning a boolean. The first decider to return true allows an 
+unresolved variable to be present without throwing an exception.
 
 ```php
 use webignition\Stubble\VariableResolver;
+use webignition\Stubble\UnresolvedVariableFinder;
 
-$resolver = new VariableResolver();
+$resolver = new VariableResolver(
+    new UnresolvedVariableFinder([
+        function (string $variable) {
+            return 'location' === $variable;
+        },        
+    ])
+);
 
 $template = 'Hello {{ name }} and welcome to {{ location }}.';
 $context = [
     'name' => 'Jon',
 ];
-
-$resolver->addUnresolvedVariableDecider(function (string $variable) {
-    return 'location' === $variable;
-});
 
 $resolvedTemplate = $resolver->resolve($template, $context);
 echo $resolvedTemplate; // Hello Jon and welcome to {{ location }}.
@@ -83,17 +84,16 @@ echo $resolvedTemplate; // Hello Jon and welcome to {{ location }}.
 ```php
 use webignition\Stubble\DeciderFactory;
 use webignition\Stubble\VariableResolver;
+use webignition\Stubble\UnresolvedVariableFinder;
 
-$resolver = new VariableResolver();
-
+$resolver = new VariableResolver(
+    new UnresolvedVariableFinder([
 // Allow all unresolved variables
-$resolver->addUnresolvedVariableDecider(DeciderFactory::createAllowAllDecider());
-
+DeciderFactory::createAllowAllDecider(),
 // Disallow all unresolved variables
-$resolver->addUnresolvedVariableDecider(DeciderFactory::createDisallowAllDecider());
-
-// Allow unresolved variables by pattern (regular expression)
-$resolver->addUnresolvedVariableDecider(DeciderFactory::createAllowByPatternDecider('/^variable[0-9]$/'));
-
-
+DeciderFactory::createDisallowAllDecider(),
+// Allow unresolved variables by pattern (regular expression),
+DeciderFactory::createAllowByPatternDecider('/^variable[0-9]$/')
+    ])
+);
 ```
