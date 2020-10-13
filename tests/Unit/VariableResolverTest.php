@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace webignition\Stubble\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use webignition\Stubble\Resolvable;
+use webignition\Stubble\ResolvableInterface;
 use webignition\Stubble\UnresolvedVariableException;
 use webignition\Stubble\UnresolvedVariableFinder;
 use webignition\Stubble\VariableResolver;
@@ -13,65 +15,48 @@ class VariableResolverTest extends TestCase
 {
     /**
      * @dataProvider resolveDataProvider
-     *
-     * @param string $template
-     * @param array<string, string> $context
-     * @param string $expectedResolvedTemplate
-     * @param UnresolvedVariableFinder|null $unresolvedVariableFinder
      */
     public function testResolve(
-        string $template,
-        array $context,
+        ResolvableInterface $resolvable,
         string $expectedResolvedTemplate,
         ?UnresolvedVariableFinder $unresolvedVariableFinder = null
     ) {
         $resolver = new VariableResolver($unresolvedVariableFinder);
 
-        $resolvedContent = $resolver->resolve($template, $context);
+        $resolvedContent = $resolver->resolve($resolvable);
 
         self::assertSame($expectedResolvedTemplate, $resolvedContent);
     }
 
     /**
      * @dataProvider resolveDataProvider
-     *
-     * @param string $template
-     * @param array<string, string> $context
-     * @param string $expectedResolvedTemplate
      */
     public function testResolveAndIgnoreUnresolvedVariables(
-        string $template,
-        array $context,
+        ResolvableInterface $resolvable,
         string $expectedResolvedTemplate
     ) {
         $resolver = new VariableResolver();
 
-        $resolvedContent = $resolver->resolveAndIgnoreUnresolvedVariables($template, $context);
+        $resolvedContent = $resolver->resolveAndIgnoreUnresolvedVariables($resolvable);
 
         self::assertSame($expectedResolvedTemplate, $resolvedContent);
     }
 
     /**
      * @dataProvider resolveThrowsUnresolvedVariableExceptionDataProvider
-     *
-     * @param string $template
-     * @param array<string, string> $context
-     * @param string $expectedVariable
-     * @param UnresolvedVariableFinder|null $unresolvedVariableFinder
      */
     public function testResolveThrowsUnresolvedVariableException(
-        string $template,
-        array $context,
+        ResolvableInterface $resolvable,
         string $expectedVariable,
         ?UnresolvedVariableFinder $unresolvedVariableFinder = null
     ) {
         $resolver = new VariableResolver($unresolvedVariableFinder);
 
         try {
-            $resolver->resolve($template, $context);
+            $resolver->resolve($resolvable);
         } catch (UnresolvedVariableException $unresolvedVariableException) {
             $this->assertSame($expectedVariable, $unresolvedVariableException->getVariable());
-            $this->assertSame($template, $unresolvedVariableException->getTemplate());
+            $this->assertSame($resolvable->getTemplate(), $unresolvedVariableException->getTemplate());
         }
     }
 
@@ -79,32 +64,33 @@ class VariableResolverTest extends TestCase
     {
         return [
             'single variable' => [
-                'template' => 'Content with {{variable}}',
-                'context' => [],
+                'resolvable' => new Resolvable('Content with {{variable}}', []),
                 'expectedVariable' => 'variable',
             ],
             'two variables, both missing' => [
-                'template' => 'Content with {{variable1}} and {{variable2}}',
-                'context' => [],
+                'resolvable' => new Resolvable('Content with {{variable1}} and {{variable2}}', []),
                 'expectedVariable' => 'variable1',
             ],
             'two variables, first missing' => [
-                'template' => 'Content with {{variable1}} and {{variable2}}',
-                'context' => [
-                    'variable2' => 'bar',
-                ],
+                'resolvable' => new Resolvable(
+                    'Content with {{variable1}} and {{variable2}}',
+                    [
+                        'variable2' => 'bar',
+                    ]
+                ),
                 'expectedVariable' => 'variable1',
             ],
             'two variables, second missing' => [
-                'template' => 'Content with {{variable1}} and {{variable2}}',
-                'context' => [
-                    'variable1' => 'foo',
-                ],
+                'resolvable' => new Resolvable(
+                    'Content with {{variable1}} and {{variable2}}',
+                    [
+                        'variable1' => 'foo',
+                    ]
+                ),
                 'expectedVariable' => 'variable2',
             ],
             'two variables, both missing, first allowed to be missing' => [
-                'template' => 'Content with {{variable1}} and {{variable2}}',
-                'context' => [],
+                'resolvable' => new Resolvable('Content with {{variable1}} and {{variable2}}', []),
                 'expectedVariable' => 'variable2',
                 'unresolvedVariableFinder' => new UnresolvedVariableFinder([
                     function (string $variable) {
@@ -119,34 +105,35 @@ class VariableResolverTest extends TestCase
     {
         return [
             'empty template, no variables' => [
-                'template' => '',
-                'context' => [],
+                'resolvable' => new Resolvable('', []),
                 'expectedResolvedTemplate' => '',
             ],
             'non-empty template, no variables' => [
-                'template' => 'non-empty content',
-                'context' => [],
+                'resolvable' => new Resolvable('non-empty content', []),
                 'expectedResolvedTemplate' => 'non-empty content',
             ],
             'non-empty template, has variables' => [
-                'template' => 'Hello {{ name }}, welcome to {{ place }}.',
-                'context' => [
-                    'name' => 'Jon',
-                    'place' => 'Location',
-                ],
+                'resolvable' => new Resolvable(
+                    'Hello {{ name }}, welcome to {{ place }}.',
+                    [
+                        'name' => 'Jon',
+                        'place' => 'Location',
+                    ]
+                ),
                 'expectedResolvedTemplate' => 'Hello Jon, welcome to Location.',
             ],
             'non-empty template, has variables without surrounding whitespace' => [
-                'template' => 'Hello {{name}}, welcome to {{place}}.',
-                'context' => [
-                    'name' => 'Jon',
-                    'place' => 'Location',
-                ],
+                'resolvable' => new Resolvable(
+                    'Hello {{name}}, welcome to {{place}}.',
+                    [
+                        'name' => 'Jon',
+                        'place' => 'Location',
+                    ]
+                ),
                 'expectedResolvedTemplate' => 'Hello Jon, welcome to Location.',
             ],
             'non-empty template, has missing variables allowed by same decider' => [
-                'template' => 'Hello {{ name }}, welcome to {{ place }}.',
-                'context' => [],
+                'resolvable' => new Resolvable('Hello {{ name }}, welcome to {{ place }}.', []),
                 'expectedResolvedTemplate' => 'Hello {{ name }}, welcome to {{ place }}.',
                 'unresolvedVariableFinder' => new UnresolvedVariableFinder([
                     function (string $variable) {
@@ -155,8 +142,7 @@ class VariableResolverTest extends TestCase
                 ]),
             ],
             'non-empty template, has missing variables allowed by different deciders' => [
-                'template' => 'Hello {{ name }}, welcome to {{ place }}.',
-                'context' => [],
+                'resolvable' => new Resolvable('Hello {{ name }}, welcome to {{ place }}.', []),
                 'expectedResolvedTemplate' => 'Hello {{ name }}, welcome to {{ place }}.',
                 'unresolvedVariableFinder' => new UnresolvedVariableFinder([
                     function (string $variable) {
