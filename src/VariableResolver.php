@@ -16,52 +16,39 @@ class VariableResolver
     }
 
     /**
-     * @param string $template
-     * @param array<string, string> $context
+     * @param ResolvableInterface $resolvable
      *
      * @return string
      *
      * @throws UnresolvedVariableException
      */
-    public function resolve(string $template, array $context): string
+    public function resolve(ResolvableInterface $resolvable): string
     {
-        $resolvedTemplate = $this->doResolve($template, $context);
+        $resolvedTemplate = $this->doResolve($resolvable);
 
         $unresolvedVariable = $this->unresolvedVariableFinder->findFirst($resolvedTemplate);
         if (is_string($unresolvedVariable)) {
-            throw new UnresolvedVariableException($unresolvedVariable, trim($template));
+            throw new UnresolvedVariableException($unresolvedVariable, trim($resolvable->getTemplate()));
         }
 
         return $resolvedTemplate;
     }
 
-    /**
-     * @param string $template
-     * @param array<string, string> $context
-     *
-     * @return string
-     */
-    public function resolveAndIgnoreUnresolvedVariables(string $template, array $context): string
+    public function resolveAndIgnoreUnresolvedVariables(ResolvableInterface $resolvable): string
     {
-        return $this->doResolve($template, $context);
+        return $this->doResolve($resolvable);
     }
 
-    /**
-     * @param string $template
-     * @param array<string, string> $context
-     *
-     * @return string
-     */
-    private function doResolve(string $template, array $context)
+    private function doResolve(ResolvableInterface $resolvable): string
     {
         $search = [];
         $replace = [];
 
-        foreach ($context as $key => $value) {
+        foreach ($resolvable->getContext() as $key => $value) {
             $search[] = sprintf('/{{ ?%s ?}}/', $key);
             $replace[] = $value;
         }
 
-        return (string) preg_replace($search, $replace, $template);
+        return (string) preg_replace($search, $replace, $resolvable->getTemplate());
     }
 }
