@@ -6,38 +6,28 @@ namespace webignition\Stubble\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use webignition\Stubble\UnresolvedVariableException;
+use webignition\Stubble\UnresolvedVariableFinder;
 use webignition\Stubble\VariableResolver;
 
 class VariableResolverTest extends TestCase
 {
-    private VariableResolver $resolver;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->resolver = new VariableResolver();
-    }
-
     /**
      * @dataProvider resolveDataProvider
      *
      * @param string $template
      * @param array<string, string> $context
      * @param string $expectedResolvedTemplate
-     * @param callable[] $unresolvedVariableDeciders
+     * @param UnresolvedVariableFinder|null $unresolvedVariableFinder
      */
     public function testResolve(
         string $template,
         array $context,
         string $expectedResolvedTemplate,
-        array $unresolvedVariableDeciders = []
+        ?UnresolvedVariableFinder $unresolvedVariableFinder = null
     ) {
-        foreach ($unresolvedVariableDeciders as $decider) {
-            $this->resolver->addUnresolvedVariableDecider($decider);
-        }
+        $resolver = new VariableResolver($unresolvedVariableFinder);
 
-        $resolvedContent = $this->resolver->resolve($template, $context);
+        $resolvedContent = $resolver->resolve($template, $context);
 
         self::assertSame($expectedResolvedTemplate, $resolvedContent);
     }
@@ -54,7 +44,9 @@ class VariableResolverTest extends TestCase
         array $context,
         string $expectedResolvedTemplate
     ) {
-        $resolvedContent = $this->resolver->resolveAndIgnoreUnresolvedVariables($template, $context);
+        $resolver = new VariableResolver();
+
+        $resolvedContent = $resolver->resolveAndIgnoreUnresolvedVariables($template, $context);
 
         self::assertSame($expectedResolvedTemplate, $resolvedContent);
     }
@@ -65,20 +57,18 @@ class VariableResolverTest extends TestCase
      * @param string $template
      * @param array<string, string> $context
      * @param string $expectedVariable
-     * @param callable[] $unresolvedVariableDeciders
+     * @param UnresolvedVariableFinder|null $unresolvedVariableFinder
      */
     public function testResolveThrowsUnresolvedVariableException(
         string $template,
         array $context,
         string $expectedVariable,
-        array $unresolvedVariableDeciders = []
+        ?UnresolvedVariableFinder $unresolvedVariableFinder = null
     ) {
-        foreach ($unresolvedVariableDeciders as $decider) {
-            $this->resolver->addUnresolvedVariableDecider($decider);
-        }
+        $resolver = new VariableResolver($unresolvedVariableFinder);
 
         try {
-            $this->resolver->resolve($template, $context);
+            $resolver->resolve($template, $context);
         } catch (UnresolvedVariableException $unresolvedVariableException) {
             $this->assertSame($expectedVariable, $unresolvedVariableException->getVariable());
             $this->assertSame($template, $unresolvedVariableException->getTemplate());
@@ -116,11 +106,11 @@ class VariableResolverTest extends TestCase
                 'template' => 'Content with {{variable1}} and {{variable2}}',
                 'context' => [],
                 'expectedVariable' => 'variable2',
-                'unresolvedVariableDeciders' => [
+                'unresolvedVariableFinder' => new UnresolvedVariableFinder([
                     function (string $variable) {
                         return 'variable1' === $variable;
                     },
-                ],
+                ]),
             ],
         ];
     }
@@ -131,17 +121,17 @@ class VariableResolverTest extends TestCase
      * @param string $template
      * @param array<string, string> $context
      * @param string $expectedResolvedTemplate
-     * @param callable[] $unresolvedVariableDeciders
+     * @param UnresolvedVariableFinder|null $unresolvedVariableFinder
      */
     public function testResolveTemplate(
         string $template,
         array $context,
         string $expectedResolvedTemplate,
-        array $unresolvedVariableDeciders = []
+        ?UnresolvedVariableFinder $unresolvedVariableFinder = null
     ) {
         self::assertSame(
             $expectedResolvedTemplate,
-            VariableResolver::resolveTemplate($template, $context, $unresolvedVariableDeciders)
+            VariableResolver::resolveTemplate($template, $context, $unresolvedVariableFinder)
         );
     }
 
@@ -151,16 +141,16 @@ class VariableResolverTest extends TestCase
      * @param string $template
      * @param array<string, string> $context
      * @param string $expectedVariable
-     * @param callable[] $unresolvedVariableDeciders
+     * @param UnresolvedVariableFinder|null $unresolvedVariableFinder
      */
     public function testResolveTemplateThrowsUnresolvedVariableException(
         string $template,
         array $context,
         string $expectedVariable,
-        array $unresolvedVariableDeciders = []
+        ?UnresolvedVariableFinder $unresolvedVariableFinder = null
     ) {
         try {
-            VariableResolver::resolveTemplate($template, $context, $unresolvedVariableDeciders);
+            VariableResolver::resolveTemplate($template, $context, $unresolvedVariableFinder);
         } catch (UnresolvedVariableException $unresolvedVariableException) {
             $this->assertSame($expectedVariable, $unresolvedVariableException->getVariable());
             $this->assertSame($template, $unresolvedVariableException->getTemplate());
@@ -218,24 +208,24 @@ class VariableResolverTest extends TestCase
                 'template' => 'Hello {{ name }}, welcome to {{ place }}.',
                 'context' => [],
                 'expectedResolvedTemplate' => 'Hello {{ name }}, welcome to {{ place }}.',
-                'unresolvedVariableDeciders' => [
+                'unresolvedVariableFinder' => new UnresolvedVariableFinder([
                     function (string $variable) {
                         return 'name' === $variable || 'place' === $variable;
                     },
-                ],
+                ]),
             ],
             'non-empty template, has missing variables allowed by different deciders' => [
                 'template' => 'Hello {{ name }}, welcome to {{ place }}.',
                 'context' => [],
                 'expectedResolvedTemplate' => 'Hello {{ name }}, welcome to {{ place }}.',
-                'unresolvedVariableDeciders' => [
+                'unresolvedVariableFinder' => new UnresolvedVariableFinder([
                     function (string $variable) {
                         return 'name' === $variable || 'place' === $variable;
                     },
                     function (string $variable) {
                         return 'place' === $variable;
                     },
-                ],
+                ]),
             ],
         ];
     }

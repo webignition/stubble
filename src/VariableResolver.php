@@ -6,28 +6,32 @@ namespace webignition\Stubble;
 
 class VariableResolver
 {
-    /**
-     * @var callable[]
-     */
-    private array $unresolvedVariableDeciders = [];
+    private UnresolvedVariableFinder $unresolvedVariableFinder;
 
-    public function __construct()
+    public function __construct(?UnresolvedVariableFinder $unresolvedVariableFinder = null)
     {
-        $this->unresolvedVariableDeciders[] = DeciderFactory::createDisallowAllDecider();
+        $this->unresolvedVariableFinder = $unresolvedVariableFinder ?? new UnresolvedVariableFinder([
+            DeciderFactory::createDisallowAllDecider()
+        ]);
     }
 
     /**
      * @param string $template
      * @param array<string, string> $context
-     * @param callable[] $deciders
+     * @param UnresolvedVariableFinder|null $unresolvedVariableFinder
      *
      * @return string
      *
      * @throws UnresolvedVariableException
      */
-    public static function resolveTemplate(string $template, array $context, array $deciders = []): string
-    {
-        return self::createResolver($deciders)->resolve($template, $context);
+    public static function resolveTemplate(
+        string $template,
+        array $context,
+        ?UnresolvedVariableFinder $unresolvedVariableFinder = null
+    ): string {
+        $resolver = new VariableResolver($unresolvedVariableFinder);
+
+        return $resolver->resolve($template, $context);
     }
 
     /**
@@ -38,7 +42,11 @@ class VariableResolver
      */
     public static function resolveTemplateAndIgnoreUnresolvedVariables(string $template, array $context): string
     {
-        return self::createResolver([])->resolveAndIgnoreUnresolvedVariables($template, $context);
+        $resolver = new VariableResolver(
+            new UnresolvedVariableFinder([])
+        );
+
+        return $resolver->resolveAndIgnoreUnresolvedVariables($template, $context);
     }
 
     /**
@@ -53,8 +61,8 @@ class VariableResolver
     {
         $resolvedTemplate = $this->doResolve($template, $context);
 
-        $unresolvedVariable = $this->findFirstUnresolvedVariable($resolvedTemplate);
-        if (is_string($unresolvedVariable) && false === $this->isAllowedUnresolvedVariable($unresolvedVariable)) {
+        $unresolvedVariable = $this->unresolvedVariableFinder->findFirst($resolvedTemplate);
+        if (is_string($unresolvedVariable)) {
             throw new UnresolvedVariableException($unresolvedVariable, trim($template));
         }
 
@@ -70,11 +78,6 @@ class VariableResolver
     public function resolveAndIgnoreUnresolvedVariables(string $template, array $context): string
     {
         return $this->doResolve($template, $context);
-    }
-
-    public function addUnresolvedVariableDecider(callable $decider): void
-    {
-        $this->unresolvedVariableDeciders[] = $decider;
     }
 
     /**
@@ -94,52 +97,5 @@ class VariableResolver
         }
 
         return (string) preg_replace($search, $replace, $template);
-    }
-
-    private function findFirstUnresolvedVariable(string $resolvedTemplate): ?string
-    {
-        $unresolvedVariableMatches = [];
-        if (preg_match_all('/{{ ?[^{]+ ?}}/', $resolvedTemplate, $unresolvedVariableMatches)) {
-            foreach ($unresolvedVariableMatches[0] as $unresolvedVariableMatch) {
-                $unresolvedVariable = trim($unresolvedVariableMatch, '{} ');
-
-                if (false === $this->isAllowedUnresolvedVariable($unresolvedVariable)) {
-                    return $unresolvedVariable;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private function isAllowedUnresolvedVariable(string $variable): bool
-    {
-        $deciders = $this->unresolvedVariableDeciders;
-        $deciders = array_reverse($deciders);
-
-        foreach ($deciders as $decider) {
-            if (true === $decider($variable)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param callable[] $unresolvedVariableDeciders
-     *
-     * @return self
-     */
-    private static function createResolver(array $unresolvedVariableDeciders): self
-    {
-        $resolver = new VariableResolver();
-        foreach ($unresolvedVariableDeciders as $decider) {
-            if (is_callable($decider)) {
-                $resolver->addUnresolvedVariableDecider($decider);
-            }
-        }
-
-        return $resolver;
     }
 }

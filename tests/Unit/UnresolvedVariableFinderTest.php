@@ -12,8 +12,8 @@ class UnresolvedVariableFinderTest extends TestCase
     /**
      * @dataProvider findFirstDataProvider
      *
+     * @param UnresolvedVariableFinder $finder
      * @param string $resolvedTemplate
-     * @param callable[] $deciders
      * @param string|null $expectedFirstUnresolvedVariable
      */
     public function testFindFirst(
