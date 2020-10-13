@@ -9,16 +9,28 @@ class UnresolvedVariableFinder
     /**
      * @var callable[]
      */
-    private array $unresolvedVariableDeciders = [];
+    private array $deciders;
 
-    public function __construct()
+    /**
+     * @param callable[] $deciders
+     */
+    public function __construct(array $deciders = [])
     {
-        $this->unresolvedVariableDeciders[] = DeciderFactory::createDisallowAllDecider();
+        $this->deciders = [
+            DeciderFactory::createDisallowAllDecider(),
+        ];
+
+        $this->deciders = array_merge(
+            $this->deciders,
+            array_filter($deciders, function ($item) {
+                return is_callable($item);
+            })
+        );
     }
 
     public function addDecider(callable $decider): void
     {
-        $this->unresolvedVariableDeciders[] = $decider;
+        $this->deciders[] = $decider;
     }
 
     public function findFirst(string $resolvedTemplate): ?string
@@ -39,7 +51,7 @@ class UnresolvedVariableFinder
 
     private function isAllowedUnresolvedVariable(string $variable): bool
     {
-        $deciders = $this->unresolvedVariableDeciders;
+        $deciders = $this->deciders;
         $deciders = array_reverse($deciders);
 
         foreach ($deciders as $decider) {

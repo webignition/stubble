@@ -9,15 +9,6 @@ use webignition\Stubble\UnresolvedVariableFinder;
 
 class UnresolvedVariableFinderTest extends TestCase
 {
-    private UnresolvedVariableFinder $finder;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->finder = new UnresolvedVariableFinder();
-    }
-
     /**
      * @dataProvider findFirstDataProvider
      *
@@ -25,57 +16,58 @@ class UnresolvedVariableFinderTest extends TestCase
      * @param callable[] $deciders
      * @param string|null $expectedFirstUnresolvedVariable
      */
-    public function testFindFirst(string $resolvedTemplate, array $deciders, ?string $expectedFirstUnresolvedVariable)
-    {
-        foreach ($deciders as $decider) {
-            $this->finder->addDecider($decider);
-        }
-
-        self::assertSame($expectedFirstUnresolvedVariable, $this->finder->findFirst($resolvedTemplate));
+    public function testFindFirst(
+        UnresolvedVariableFinder $finder,
+        string $resolvedTemplate,
+        ?string $expectedFirstUnresolvedVariable
+    ) {
+        self::assertSame($expectedFirstUnresolvedVariable, $finder->findFirst($resolvedTemplate));
     }
 
     public function findFirstDataProvider(): array
     {
+        $defaultFinder = new UnresolvedVariableFinder();
+
         return [
             'empty template' => [
+                'finder' => $defaultFinder,
                 'resolvedTemplate' => '',
-                'deciders' => [],
                 'expectedFirstUnresolvedVariable' => null,
             ],
             'no unresolved variables' => [
+                'finder' => $defaultFinder,
                 'resolvedTemplate' => 'No unresolved variables',
-                'deciders' => [],
                 'expectedFirstUnresolvedVariable' => null,
             ],
             'single unresolved variable, no deciders' => [
+                'finder' => $defaultFinder,
                 'resolvedTemplate' => 'Hello Jon, welcome to {{ place }}.',
-                'deciders' => [],
                 'expectedFirstUnresolvedVariable' => 'place',
             ],
             'two unresolved variables, no deciders' => [
+                'finder' => $defaultFinder,
                 'resolvedTemplate' => 'Hello {{ name }}, welcome to {{ place }}.',
-                'deciders' => [],
                 'expectedFirstUnresolvedVariable' => 'name',
             ],
             'two unresolved variables, first allowed' => [
-                'resolvedTemplate' => 'Hello {{ name }}, welcome to {{ place }}.',
-                'deciders' => [
+                'finder' => new UnresolvedVariableFinder([
                     function (string $variable) {
                         return 'name' === $variable;
                     },
-                ],
+                ]),
+                'resolvedTemplate' => 'Hello {{ name }}, welcome to {{ place }}.',
                 'expectedFirstUnresolvedVariable' => 'place',
             ],
             'two unresolved variables, both allowed' => [
-                'resolvedTemplate' => 'Hello {{ name }}, welcome to {{ place }}.',
-                'deciders' => [
+                'finder' => new UnresolvedVariableFinder([
                     function (string $variable) {
                         return 'name' === $variable;
                     },
                     function (string $variable) {
                         return 'place' === $variable;
                     },
-                ],
+                ]),
+                'resolvedTemplate' => 'Hello {{ name }}, welcome to {{ place }}.',
                 'expectedFirstUnresolvedVariable' => null,
             ],
         ];
