@@ -24,7 +24,7 @@ class VariableResolver
      */
     public function resolve(ResolvableInterface $resolvable): string
     {
-        $resolvedTemplate = $this->doResolve($resolvable);
+        $resolvedTemplate = $this->resolveAndIgnoreUnresolvedVariables($resolvable);
 
         $unresolvedVariable = $this->unresolvedVariableFinder->findFirst($resolvedTemplate);
         if (is_string($unresolvedVariable)) {
@@ -36,19 +36,35 @@ class VariableResolver
 
     public function resolveAndIgnoreUnresolvedVariables(ResolvableInterface $resolvable): string
     {
-        return $this->doResolve($resolvable);
-    }
+        $template = $resolvable->getTemplate();
+        $context = $resolvable->getContext();
 
-    private function doResolve(ResolvableInterface $resolvable): string
-    {
         $search = [];
         $replace = [];
 
-        foreach ($resolvable->getContext() as $key => $value) {
-            $search[] = sprintf('/{{ ?%s ?}}/', $key);
-            $replace[] = $value;
+        foreach ($context as $key => $value) {
+            $searchVariants = $this->createKeySearchVariants($key);
+            $replacements = array_fill(0, count($searchVariants), $value);
+
+            $search = array_merge($search, $searchVariants);
+            $replace = array_merge($replace, $replacements);
         }
 
-        return (string) preg_replace($search, $replace, $resolvable->getTemplate());
+        return (string) str_replace($search, $replace, $template);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return string[]
+     */
+    private function createKeySearchVariants(string $key): array
+    {
+        return [
+            '{{' . $key . '}}',
+            '{{' . $key . ' }}',
+            '{{ ' . $key . '}}',
+            '{{ ' . $key . ' }}',
+        ];
     }
 }
