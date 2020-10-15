@@ -153,6 +153,12 @@ class VariableResolverTest extends TestCase
                     },
                 ]),
             ],
+            'retain escaped double slashes' => [
+                'resolvable' => new Resolvable('{{ content }}', [
+                    'content' => '\\\\"string\\\\"',
+                ]),
+                'expectedResolvedTemplate' => '\\\\"string\\\\"',
+            ],
         ];
     }
 }
