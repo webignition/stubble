@@ -159,6 +159,18 @@ class VariableResolverTest extends TestCase
                 ]),
                 'expectedResolvedTemplate' => '\\\\"string\\\\"',
             ],
+            'resolve resolvable context values' => [
+                'resolvable' => new Resolvable('{{ content }}', [
+                    'content' => new Resolvable(
+                        '{{ key1 }} {{ key2 }}',
+                        [
+                            'key1' => 'value1',
+                            'key2' => 'value2',
+                        ]
+                    ),
+                ]),
+                'expectedResolvedTemplate' => 'value1 value2',
+            ],
         ];
     }
 }
