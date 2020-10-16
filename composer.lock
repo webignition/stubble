@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "88c822cebc98570a7b4510a117e2e27e",
+    "content-hash": "8eca66eea83b3f33a67d4fefa89efe9c",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -6334,16 +6334,16 @@
         },
         {
             "name": "webignition/stubble-resolvable",
-            "version": "0.1",
+            "version": "0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/stubble-resolvable.git",
-                "reference": "844ed9477b643c59a81a3d974ce0f463b3695dcd"
+                "reference": "a8b6c45c0b92181fcd385651637c4d9dcaf617b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/stubble-resolvable/zipball/844ed9477b643c59a81a3d974ce0f463b3695dcd",
-                "reference": "844ed9477b643c59a81a3d974ce0f463b3695dcd",
+                "url": "https://api.github.com/repos/webignition/stubble-resolvable/zipball/a8b6c45c0b92181fcd385651637c4d9dcaf617b3",
+                "reference": "a8b6c45c0b92181fcd385651637c4d9dcaf617b3",
                 "shasum": ""
             },
             "require": {
@@ -6373,9 +6373,9 @@
             "homepage": "https://github.com/webignition/stubble-resolvable",
             "support": {
                 "issues": "https://github.com/webignition/stubble-resolvable/issues",
-                "source": "https://github.com/webignition/stubble-resolvable/tree/0.1"
+                "source": "https://github.com/webignition/stubble-resolvable/tree/0.2"
             },
-            "time": "2020-10-16T09:47:59+00:00"
+            "time": "2020-10-16T10:31:04+00:00"
         },
         {
             "name": "webmozart/assert",

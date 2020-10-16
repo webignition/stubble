@@ -45,6 +45,10 @@ class VariableResolver
         $replace = [];
 
         foreach ($context as $key => $value) {
+            if ($value instanceof ResolvableInterface) {
+                $value = $this->resolveAndIgnoreUnresolvedVariables($value);
+            }
+
             $searchVariants = $this->createKeySearchVariants($key);
             $replacements = array_fill(0, count($searchVariants), $value);
 
