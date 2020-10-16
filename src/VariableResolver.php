@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace webignition\Stubble;
 
+use webignition\StubbleResolvable\ResolvableInterface;
+
 class VariableResolver
 {
     private UnresolvedVariableFinder $unresolvedVariableFinder;

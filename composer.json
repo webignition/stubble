@@ -38,7 +38,8 @@
         ]
     },
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "webignition/stubble-resolvable": "^0.1.0"
     },
     "require-dev": {
         "phpstan/extension-installer": "~1.0",

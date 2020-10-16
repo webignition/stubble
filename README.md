@@ -9,8 +9,8 @@ A minimal library to replace mustache-like variables in strings, using PHP.
 ## Hello {{ name }}! Example
 
 ```php
-use webignition\Stubble\Resolvable;
 use webignition\Stubble\VariableResolver;
+use webignition\StubbleResolvable\Resolvable;
 
 // Using a VariableResolver instance
 $resolver = new VariableResolver();
@@ -33,9 +33,9 @@ Variables remaining after resolving a template are considered unresolved variabl
 A `UnresolvedVariableException` is thrown for the first unresolved variable.
 
 ```php
-use webignition\Stubble\Resolvable;
 use webignition\Stubble\UnresolvedVariableException;
 use webignition\Stubble\VariableResolver;
+use webignition\StubbleResolvable\Resolvable;
 
 $resolver = new VariableResolver();
 
@@ -66,9 +66,9 @@ with each decider being a callable returning a boolean. The first decider to ret
 unresolved variable to be present without throwing an exception.
 
 ```php
-use webignition\Stubble\Resolvable;
 use webignition\Stubble\UnresolvedVariableFinder;
 use webignition\Stubble\VariableResolver;
+use webignition\StubbleResolvable\Resolvable;
 
 $resolver = new VariableResolver(
     new UnresolvedVariableFinder([
