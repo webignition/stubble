@@ -56,7 +56,14 @@ class VariableResolver
             $replace = array_merge($replace, $replacements);
         }
 
-        return (string) str_replace($search, $replace, $template);
+        $resolved = (string) str_replace($search, $replace, $template);
+
+        $mutator = $resolvable->getResolvedTemplateMutator();
+        if (is_callable($mutator)) {
+            $resolved = ($mutator)($resolved);
+        }
+
+        return $resolved;
     }
 
     /**

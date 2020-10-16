@@ -9,6 +9,7 @@ use webignition\Stubble\UnresolvedVariableException;
 use webignition\Stubble\UnresolvedVariableFinder;
 use webignition\Stubble\VariableResolver;
 use webignition\StubbleResolvable\Resolvable;
+use webignition\StubbleResolvable\ResolvableCollection;
 use webignition\StubbleResolvable\ResolvableInterface;
 
 class VariableResolverTest extends TestCase
@@ -170,6 +171,71 @@ class VariableResolverTest extends TestCase
                     ),
                 ]),
                 'expectedResolvedTemplate' => 'value1 value2',
+            ],
+            'resolve single resolvable with resolved template mutator' => [
+                'resolvable' => (new Resolvable(
+                    '{{ key }}',
+                    [
+                        'key' => 'value',
+                    ]
+                ))->withResolvedTemplateMutator(function (string $resolved) {
+                    return $resolved . "!";
+                }),
+                'expectedResolvedTemplate' => 'value!',
+            ],
+            'resolve collection of strings' => [
+                'resolvable' => new ResolvableCollection('item', [
+                    'item3',
+                    'item1',
+                    'item2',
+                ]),
+                'expectedResolvedTemplate' => 'item3item1item2',
+            ],
+            'resolve collection of strings, format collection' => [
+                'resolvable' => (new ResolvableCollection('item', [
+                    'item3' . "\n",
+                    'item1' . "\n",
+                    'item2' . "\n",
+                ]))->withResolvedTemplateMutator(function (string $resolvedCollection) {
+                    $lines = explode("\n", $resolvedCollection);
+
+                    $lines = array_map(function (string $line) {
+                        return '' === $line ? '' : $line . '!';
+                    }, $lines);
+
+                    sort($lines);
+
+                    return trim(implode("\n", $lines));
+                }),
+                'expectedResolvedTemplate' => 'item1!' . "\n" . 'item2!' . "\n" . 'item3!',
+            ],
+            'resolve collection of resolvable' => [
+                'resolvable' => new ResolvableCollection('content', [
+                    new Resolvable('Hello {{ first_name }} {{ last_name }}.', [
+                        'first_name' => 'User',
+                        'last_name' => 'Name',
+                    ]),
+                    new Resolvable('Proceed to room {{ room_number }} to learn {{ subject }}.', [
+                        'room_number' => '101',
+                        'subject' => 'French'
+                    ]),
+                ]),
+                'expectedResolvedTemplate' => 'Hello User Name.Proceed to room 101 to learn French.',
+            ],
+            'resolve collection of resolvable, format item' => [
+                'resolvable' => new ResolvableCollection('content', [
+                    (new Resolvable('Hello {{ first_name }} {{ last_name }}.', [
+                        'first_name' => 'User',
+                        'last_name' => 'Name',
+                    ]))->withResolvedTemplateMutator(function (string $resolved) {
+                        return $resolved . "\n";
+                    }),
+                    new Resolvable('Proceed to room {{ room_number }} to learn {{ subject }}.', [
+                        'room_number' => '101',
+                        'subject' => 'French'
+                    ]),
+                ]),
+                'expectedResolvedTemplate' => 'Hello User Name.' . "\n" . 'Proceed to room 101 to learn French.',
             ],
         ];
     }
