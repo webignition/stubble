@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace webignition\Stubble\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use webignition\Stubble\Resolvable;
-use webignition\Stubble\ResolvableInterface;
 use webignition\Stubble\UnresolvedVariableException;
 use webignition\Stubble\UnresolvedVariableFinder;
 use webignition\Stubble\VariableResolver;
+use webignition\StubbleResolvable\Resolvable;
+use webignition\StubbleResolvable\ResolvableInterface;
 
 class VariableResolverTest extends TestCase
 {
