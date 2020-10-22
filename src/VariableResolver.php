@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace webignition\Stubble;
 
 use webignition\StubbleResolvable\ResolvableInterface;
+use webignition\StubbleResolvable\ResolvedTemplateMutationInterface;
 
 class VariableResolver
 {
@@ -58,9 +59,8 @@ class VariableResolver
 
         $resolved = (string) str_replace($search, $replace, $template);
 
-        $mutator = $resolvable->getResolvedTemplateMutator();
-        if (is_callable($mutator)) {
-            $resolved = ($mutator)($resolved);
+        if ($resolvable instanceof ResolvedTemplateMutationInterface) {
+            $resolved = ($resolvable->getResolvedTemplateMutator())($resolved);
         }
 
         return $resolved;
