@@ -69,7 +69,10 @@ class VariableResolver
         $resolved = (string) str_replace($search, $replace, $template);
 
         if ($resolvable instanceof ResolvedTemplateMutationInterface) {
-            $resolved = ($resolvable->getResolvedTemplateMutator())($resolved, $itemContext);
+            $mutators = $resolvable->getResolvedTemplateMutators();
+            foreach ($mutators as $mutator) {
+                $resolved = $mutator($resolved, $itemContext);
+            }
         }
 
         return $resolved;
