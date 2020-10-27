@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace webignition\Stubble;
 
+use webignition\StubbleResolvable\ResolvableCollectionInterface;
 use webignition\StubbleResolvable\ResolvableInterface;
 use webignition\StubbleResolvable\ResolvedTemplateMutationInterface;
 
@@ -39,6 +40,11 @@ class VariableResolver
 
     public function resolveAndIgnoreUnresolvedVariables(ResolvableInterface $resolvable): string
     {
+        return $this->doResolve($resolvable);
+    }
+
+    private function doResolve(ResolvableInterface $resolvable, ?CollectionItemContext $itemContext = null): string
+    {
         $template = $resolvable->getTemplate();
         $context = $resolvable->getContext();
 
@@ -47,7 +53,10 @@ class VariableResolver
 
         foreach ($context as $key => $value) {
             if ($value instanceof ResolvableInterface) {
-                $value = $this->resolveAndIgnoreUnresolvedVariables($value);
+                $value = $this->doResolve(
+                    $value,
+                    $this->createCollectionItemContext($resolvable, $value)
+                );
             }
 
             $searchVariants = $this->createKeySearchVariants($key);
@@ -60,10 +69,30 @@ class VariableResolver
         $resolved = (string) str_replace($search, $replace, $template);
 
         if ($resolvable instanceof ResolvedTemplateMutationInterface) {
-            $resolved = ($resolvable->getResolvedTemplateMutator())($resolved);
+            $resolved = ($resolvable->getResolvedTemplateMutator())($resolved, $itemContext);
         }
 
         return $resolved;
+    }
+
+    /**
+     * @param ResolvableInterface $resolvable
+     * @param mixed $item
+     *
+     * @return CollectionItemContext|null
+     */
+    private function createCollectionItemContext(ResolvableInterface $resolvable, $item): ?CollectionItemContext
+    {
+        if (!$resolvable instanceof ResolvableCollectionInterface) {
+            return null;
+        }
+
+        $position = $resolvable->getIndexForItem($item);
+        if (null === $position) {
+            return null;
+        }
+
+        return new CollectionItemContext($position, count($resolvable));
     }
 
     /**
