@@ -4,8 +4,62 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc2bc89f94295959338ac55c0d426a01",
+    "content-hash": "8d543d92bb31cbfdee81e7547ccf4227",
     "packages": [
+        {
+            "name": "webignition/stubble-resolvable",
+            "version": "0.20",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/stubble-resolvable.git",
+                "reference": "e66160ec11fce858f0c1f0a51ec1631a9bf72733"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/stubble-resolvable/zipball/e66160ec11fce858f0c1f0a51ec1631a9bf72733",
+                "reference": "e66160ec11fce858f0c1f0a51ec1631a9bf72733",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.4",
+                "php-mock/php-mock": "^2.2",
+                "php-mock/php-mock-mockery": "^1.3",
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "^0.12.52",
+                "phpstan/phpstan-mockery": "^0.12.7",
+                "phpunit/phpunit": "^9.4",
+                "squizlabs/php_codesniffer": "^3.5",
+                "symplify/easy-coding-standard": "^8.3",
+                "webignition/object-reflector": "^0.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\StubbleResolvable\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "webignition@gmail.com"
+                }
+            ],
+            "homepage": "https://github.com/webignition/stubble-resolvable",
+            "support": {
+                "issues": "https://github.com/webignition/stubble-resolvable/issues",
+                "source": "https://github.com/webignition/stubble-resolvable/tree/0.20"
+            },
+            "time": "2020-10-27T10:59:06+00:00"
+        }
+    ],
+    "packages-dev": [
         {
             "name": "composer/package-versions-deprecated",
             "version": "1.11.99",
@@ -6333,51 +6387,6 @@
             "time": "2020-07-12T23:59:07+00:00"
         },
         {
-            "name": "webignition/stubble-resolvable",
-            "version": "0.11",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webignition/stubble-resolvable.git",
-                "reference": "e6485919757be2767671e75ce616bfd7f9cd61ec"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webignition/stubble-resolvable/zipball/e6485919757be2767671e75ce616bfd7f9cd61ec",
-                "reference": "e6485919757be2767671e75ce616bfd7f9cd61ec",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.4",
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^0.12.49",
-                "phpunit/phpunit": "^9.4",
-                "squizlabs/php_codesniffer": "^3.5",
-                "symplify/easy-coding-standard": "^8.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "webignition\\StubbleResolvable\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jon Cram",
-                    "email": "webignition@gmail.com"
-                }
-            ],
-            "homepage": "https://github.com/webignition/stubble-resolvable",
-            "support": {
-                "issues": "https://github.com/webignition/stubble-resolvable/issues",
-                "source": "https://github.com/webignition/stubble-resolvable/tree/0.11"
-            },
-            "time": "2020-10-22T08:48:16+00:00"
-        },
-        {
             "name": "webmozart/assert",
             "version": "1.9.1",
             "source": {
@@ -6431,7 +6440,6 @@
             "time": "2020-07-08T17:02:28+00:00"
         }
     ],
-    "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": [],

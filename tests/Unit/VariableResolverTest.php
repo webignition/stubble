@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace webignition\Stubble\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use webignition\Stubble\CollectionItemContext;
 use webignition\Stubble\UnresolvedVariableException;
 use webignition\Stubble\UnresolvedVariableFinder;
 use webignition\Stubble\VariableResolver;
@@ -105,6 +106,16 @@ class VariableResolverTest extends TestCase
 
     public function resolveDataProvider(): array
     {
+        $appendNewLineToAllButLastItemMutator = function (string $resolved, ?CollectionItemContext $context) {
+            $appendNewLine = $context instanceof CollectionItemContext && false === $context->isLast();
+
+            if ($appendNewLine) {
+                $resolved .= "\n";
+            }
+
+            return $resolved;
+        };
+
         return [
             'empty template, no variables' => [
                 'resolvable' => new Resolvable('', []),
@@ -188,16 +199,16 @@ class VariableResolverTest extends TestCase
                 'expectedResolvedTemplate' => 'value!',
             ],
             'resolve collection of strings' => [
-                'resolvable' => new ResolvableCollection('item', [
+                'resolvable' => ResolvableCollection::create([
                     'item3',
                     'item1',
                     'item2',
                 ]),
                 'expectedResolvedTemplate' => 'item3item1item2',
             ],
-            'resolve collection of strings, format collection' => [
+            'resolve collection of strings, collection mutator' => [
                 'resolvable' => new ResolvedTemplateMutatorResolvable(
-                    new ResolvableCollection('item', [
+                    ResolvableCollection::create([
                         'item3' . "\n",
                         'item1' . "\n",
                         'item2' . "\n",
@@ -217,7 +228,7 @@ class VariableResolverTest extends TestCase
                 'expectedResolvedTemplate' => 'item1!' . "\n" . 'item2!' . "\n" . 'item3!',
             ],
             'resolve collection of resolvable' => [
-                'resolvable' => new ResolvableCollection('content', [
+                'resolvable' => ResolvableCollection::create([
                     new Resolvable('Hello {{ first_name }} {{ last_name }}.', [
                         'first_name' => 'User',
                         'last_name' => 'Name',
@@ -229,26 +240,54 @@ class VariableResolverTest extends TestCase
                 ]),
                 'expectedResolvedTemplate' => 'Hello User Name.Proceed to room 101 to learn French.',
             ],
-            'resolve collection of resolvable, format item' => [
-                'resolvable' => new ResolvableCollection(
-                    'content',
-                    [
-                        new ResolvedTemplateMutatorResolvable(
-                            new Resolvable('Hello {{ first_name }} {{ last_name }}.', [
-                                'first_name' => 'User',
-                                'last_name' => 'Name',
-                            ]),
-                            function (string $resolved) {
-                                return $resolved . "\n";
-                            }
-                        ),
-                        new Resolvable('Proceed to room {{ room_number }} to learn {{ subject }}.', [
-                            'room_number' => '101',
-                            'subject' => 'French'
+            'resolve collection of resolvable, item mutators' => [
+                'resolvable' => ResolvableCollection::create([
+                    new ResolvedTemplateMutatorResolvable(
+                        new Resolvable('Hello {{ first_name }} {{ last_name }}.', [
+                            'first_name' => 'User',
+                            'last_name' => 'Name',
                         ]),
-                    ]
-                ),
+                        function (string $resolved) {
+                            return $resolved . "\n";
+                        }
+                    ),
+                    new Resolvable('Proceed to room {{ room_number }} to learn {{ subject }}.', [
+                        'room_number' => '101',
+                        'subject' => 'French'
+                    ]),
+                ]),
                 'expectedResolvedTemplate' => 'Hello User Name.' . "\n" . 'Proceed to room 101 to learn French.',
+            ],
+            'resolve collection of resolvable, context-aware item mutators, collection mutator' => [
+                'resolvable' => new ResolvedTemplateMutatorResolvable(
+                    ResolvableCollection::create([
+                        new ResolvedTemplateMutatorResolvable(
+                            new Resolvable('{{ name }}', [
+                                'name' => 'item1',
+                            ]),
+                            $appendNewLineToAllButLastItemMutator
+                        ),
+                        new ResolvedTemplateMutatorResolvable(
+                            new Resolvable('{{ name }}', [
+                                'name' => 'item2',
+                            ]),
+                            $appendNewLineToAllButLastItemMutator
+                        ),
+                        new ResolvedTemplateMutatorResolvable(
+                            new Resolvable('{{ name }}', [
+                                'name' => 'item3',
+                            ]),
+                            $appendNewLineToAllButLastItemMutator
+                        ),
+                    ]),
+                    function (string $resolved): string {
+                        return $resolved . "!";
+                    }
+                ),
+                'expectedResolvedTemplate' =>
+                    'item1' . "\n" .
+                    'item2' . "\n" .
+                    'item3!',
             ],
         ];
     }
