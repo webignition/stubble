@@ -23,7 +23,7 @@ class VariableResolverTest extends TestCase
         ResolvableInterface $resolvable,
         string $expectedResolvedTemplate,
         ?UnresolvedVariableFinder $unresolvedVariableFinder = null
-    ) {
+    ): void {
         $resolver = new VariableResolver($unresolvedVariableFinder);
 
         $resolvedContent = $resolver->resolve($resolvable);
@@ -37,7 +37,7 @@ class VariableResolverTest extends TestCase
     public function testResolveAndIgnoreUnresolvedVariables(
         ResolvableInterface $resolvable,
         string $expectedResolvedTemplate
-    ) {
+    ): void {
         $resolver = new VariableResolver();
 
         $resolvedContent = $resolver->resolveAndIgnoreUnresolvedVariables($resolvable);
@@ -52,7 +52,7 @@ class VariableResolverTest extends TestCase
         ResolvableInterface $resolvable,
         string $expectedVariable,
         ?UnresolvedVariableFinder $unresolvedVariableFinder = null
-    ) {
+    ): void {
         $resolver = new VariableResolver($unresolvedVariableFinder);
 
         try {
@@ -63,6 +63,9 @@ class VariableResolverTest extends TestCase
         }
     }
 
+    /**
+     * @return array[]
+     */
     public function resolveThrowsUnresolvedVariableExceptionDataProvider(): array
     {
         return [
@@ -104,6 +107,9 @@ class VariableResolverTest extends TestCase
         ];
     }
 
+    /**
+     * @return array[]
+     */
     public function resolveDataProvider(): array
     {
         $appendNewLineToAllButLastItemMutator = function (string $resolved, ?CollectionItemContext $context) {

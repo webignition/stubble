@@ -16,10 +16,13 @@ class UnresolvedVariableFinderTest extends TestCase
         UnresolvedVariableFinder $finder,
         string $resolvedTemplate,
         ?string $expectedFirstUnresolvedVariable
-    ) {
+    ): void {
         self::assertSame($expectedFirstUnresolvedVariable, $finder->findFirst($resolvedTemplate));
     }
 
+    /**
+     * @return array[]
+     */
     public function findFirstDataProvider(): array
     {
         $defaultFinder = new UnresolvedVariableFinder();
