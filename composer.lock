@@ -4,35 +4,35 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e35da0fdb5a64fc8c7accf9f8c826e74",
+    "content-hash": "1b606505dcef3f24f80efa8bf4ef32b8",
     "packages": [
         {
             "name": "webignition/stubble-resolvable",
-            "version": "0.21",
+            "version": "0.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/stubble-resolvable.git",
-                "reference": "eafc1cf9c7d2747b1115eded1df9e256756f4b86"
+                "reference": "98ebf61216c1f946d62b7593f729bad5b29eebc7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/stubble-resolvable/zipball/eafc1cf9c7d2747b1115eded1df9e256756f4b86",
-                "reference": "eafc1cf9c7d2747b1115eded1df9e256756f4b86",
+                "url": "https://api.github.com/repos/webignition/stubble-resolvable/zipball/98ebf61216c1f946d62b7593f729bad5b29eebc7",
+                "reference": "98ebf61216c1f946d62b7593f729bad5b29eebc7",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.4"
+                "php": ">=7.4|^8"
             },
             "require-dev": {
                 "mockery/mockery": "^1.4",
-                "php-mock/php-mock": "^2.2",
+                "php-mock/php-mock": "^2.3",
                 "php-mock/php-mock-mockery": "^1.3",
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^0.12.52",
-                "phpstan/phpstan-mockery": "^0.12.7",
-                "phpunit/phpunit": "^9.4",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan": "^0.12.77",
+                "phpstan/phpstan-mockery": "^0.12.12",
+                "phpunit/phpunit": "^9.5",
                 "squizlabs/php_codesniffer": "^3.5",
-                "symplify/easy-coding-standard": "^8.3",
+                "symplify/easy-coding-standard": "^9.1",
                 "webignition/object-reflector": "^0.2.0"
             },
             "type": "library",
@@ -54,9 +54,9 @@
             "homepage": "https://github.com/webignition/stubble-resolvable",
             "support": {
                 "issues": "https://github.com/webignition/stubble-resolvable/issues",
-                "source": "https://github.com/webignition/stubble-resolvable/tree/0.21"
+                "source": "https://github.com/webignition/stubble-resolvable/tree/0.22"
             },
-            "time": "2020-10-27T16:10:38+00:00"
+            "time": "2021-02-18T11:12:17+00:00"
         }
     ],
     "packages-dev": [
@@ -6583,7 +6583,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.4"
+        "php": ">=7.4|^8"
     },
     "platform-dev": [],
     "plugin-api-version": "2.0.0"
