@@ -9,14 +9,14 @@ use webignition\Stubble\DeciderFactory;
 
 class DeciderFactoryTest extends TestCase
 {
-    public function testCreateDisallowAllDecider()
+    public function testCreateDisallowAllDecider(): void
     {
         $decider = DeciderFactory::createDisallowAllDecider();
 
         self::assertFalse($decider());
     }
 
-    public function testCreateAllowAllDecider()
+    public function testCreateAllowAllDecider(): void
     {
         $decider = DeciderFactory::createAllowAllDecider();
 
@@ -26,13 +26,16 @@ class DeciderFactoryTest extends TestCase
     /**
      * @dataProvider createAllowByPatternDeciderDataProvider
      */
-    public function testCreateAllowByPatternDecider(string $pattern, string $variable, bool $expectedResult)
+    public function testCreateAllowByPatternDecider(string $pattern, string $variable, bool $expectedResult): void
     {
         $decider = DeciderFactory::createAllowByPatternDecider($pattern);
 
         self::assertSame($expectedResult, $decider($variable));
     }
 
+    /**
+     * @return array[]
+     */
     public function createAllowByPatternDeciderDataProvider(): array
     {
         return [
