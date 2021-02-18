@@ -25,8 +25,5 @@ jobs:
         with:
           args: --ignore-platform-reqs --quiet
 
-      - name: Install browser drivers
-        run: ./vendor/bin/bdi detect drivers
-
       - name: Run PHPUnit unit tests
         run: composer test
