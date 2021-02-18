@@ -8,8 +8,12 @@ on:
 
 jobs:
   ecs:
-    name: Easy Coding Standard
-    runs-on: ubuntu-latest
+    name: Easy Coding Standard on ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-versions: ['7.4', '8']
+    runs-on: ${{ matrix.operating-system }}
 
     steps:
       - name: Checkout code
@@ -18,7 +22,7 @@ jobs:
       - name: Setup php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: ${{ matrix.php-versions }}
 
       - name: Download dependencies
         uses: php-actions/composer@v2
@@ -29,8 +33,12 @@ jobs:
         run: composer cs-ecs
 
   phpcs:
-    name: PHPCS
-    runs-on: ubuntu-latest
+    name: PHPCS on ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-versions: ['7.4', '8']
+    runs-on: ${{ matrix.operating-system }}
 
     steps:
       - name: Checkout code
@@ -39,7 +47,7 @@ jobs:
       - name: Setup php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: ${{ matrix.php-versions }}
 
       - name: Download dependencies
         uses: php-actions/composer@v2
