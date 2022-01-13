@@ -21,7 +21,7 @@ class UnresolvedVariableFinderTest extends TestCase
     }
 
     /**
-     * @return array[]
+     * @return array<mixed>
      */
     public function findFirstDataProvider(): array
     {

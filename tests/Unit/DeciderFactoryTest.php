@@ -34,7 +34,7 @@ class DeciderFactoryTest extends TestCase
     }
 
     /**
-     * @return array[]
+     * @return array<mixed>
      */
     public function createAllowByPatternDeciderDataProvider(): array
     {
