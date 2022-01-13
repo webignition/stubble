@@ -75,7 +75,7 @@ class VariableResolver
     }
 
     /**
-     * @param mixed $item
+     * @param ResolvableInterface|string $item
      */
     private function createCollectionItemContext(ResolvableInterface $resolvable, $item): ?CollectionItemContext
     {

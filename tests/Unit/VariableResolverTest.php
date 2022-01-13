@@ -64,7 +64,7 @@ class VariableResolverTest extends TestCase
     }
 
     /**
-     * @return array[]
+     * @return array<mixed>
      */
     public function resolveThrowsUnresolvedVariableExceptionDataProvider(): array
     {
@@ -108,7 +108,7 @@ class VariableResolverTest extends TestCase
     }
 
     /**
-     * @return array[]
+     * @return array<mixed>
      */
     public function resolveDataProvider(): array
     {
