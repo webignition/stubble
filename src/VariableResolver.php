@@ -20,10 +20,6 @@ class VariableResolver
     }
 
     /**
-     * @param ResolvableInterface $resolvable
-     *
-     * @return string
-     *
      * @throws UnresolvedVariableException
      */
     public function resolve(ResolvableInterface $resolvable): string
@@ -79,10 +75,7 @@ class VariableResolver
     }
 
     /**
-     * @param ResolvableInterface $resolvable
      * @param mixed $item
-     *
-     * @return CollectionItemContext|null
      */
     private function createCollectionItemContext(ResolvableInterface $resolvable, $item): ?CollectionItemContext
     {
@@ -99,8 +92,6 @@ class VariableResolver
     }
 
     /**
-     * @param string $key
-     *
      * @return string[]
      */
     private function createKeySearchVariants(string $key): array

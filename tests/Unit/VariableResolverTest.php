@@ -199,7 +199,7 @@ class VariableResolverTest extends TestCase
                         ]
                     ),
                     function (string $resolved) {
-                        return $resolved . "!";
+                        return $resolved . '!';
                     }
                 ),
                 'expectedResolvedTemplate' => 'value!',
@@ -287,11 +287,10 @@ class VariableResolverTest extends TestCase
                         ),
                     ]),
                     function (string $resolved): string {
-                        return $resolved . "!";
+                        return $resolved . '!';
                     }
                 ),
-                'expectedResolvedTemplate' =>
-                    'item1' . "\n" .
+                'expectedResolvedTemplate' => 'item1' . "\n" .
                     'item2' . "\n" .
                     'item3!',
             ],
