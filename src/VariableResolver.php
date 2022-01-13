@@ -74,11 +74,10 @@ class VariableResolver
         return $resolved;
     }
 
-    /**
-     * @param ResolvableInterface|string $item
-     */
-    private function createCollectionItemContext(ResolvableInterface $resolvable, $item): ?CollectionItemContext
-    {
+    private function createCollectionItemContext(
+        ResolvableInterface $resolvable,
+        string|\Stringable|ResolvableInterface $item
+    ): ?CollectionItemContext {
         if (!$resolvable instanceof ResolvableCollectionInterface) {
             return null;
         }
