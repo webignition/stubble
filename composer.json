@@ -39,7 +39,7 @@
     },
     "require": {
         "php": "^8.0|^8.1",
-        "webignition/stubble-resolvable": ">=0.23,<1"
+        "webignition/stubble-resolvable": ">=0.24,<1"
     },
     "require-dev": {
         "phpstan/phpstan": "^1.3",
