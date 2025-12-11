@@ -7,13 +7,13 @@ namespace webignition\Stubble\Tests\Unit;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use webignition\Stubble\CollectionItemContext;
+use webignition\Stubble\Resolvable\Resolvable;
+use webignition\Stubble\Resolvable\ResolvableCollection;
+use webignition\Stubble\Resolvable\ResolvableInterface;
+use webignition\Stubble\Resolvable\ResolvedTemplateMutatorResolvable;
 use webignition\Stubble\UnresolvedVariableException;
 use webignition\Stubble\UnresolvedVariableFinder;
 use webignition\Stubble\VariableResolver;
-use webignition\StubbleResolvable\Resolvable;
-use webignition\StubbleResolvable\ResolvableCollection;
-use webignition\StubbleResolvable\ResolvableInterface;
-use webignition\StubbleResolvable\ResolvedTemplateMutatorResolvable;
 
 class VariableResolverTest extends TestCase
 {
