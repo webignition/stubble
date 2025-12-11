@@ -43,66 +43,6 @@ class VariableResolverTest extends TestCase
         self::assertSame($expectedResolvedTemplate, $resolvedContent);
     }
 
-    #[DataProvider('resolveThrowsUnresolvedVariableExceptionDataProvider')]
-    public function testResolveThrowsUnresolvedVariableException(
-        ResolvableInterface $resolvable,
-        string $expectedVariable,
-        ?UnresolvedVariableFinder $unresolvedVariableFinder = null
-    ): void {
-        $resolver = new VariableResolver($unresolvedVariableFinder);
-
-        try {
-            $resolver->resolve($resolvable);
-        } catch (UnresolvedVariableException $unresolvedVariableException) {
-            $this->assertSame($expectedVariable, $unresolvedVariableException->getVariable());
-            $this->assertSame($resolvable->getTemplate(), $unresolvedVariableException->getTemplate());
-        }
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    public static function resolveThrowsUnresolvedVariableExceptionDataProvider(): array
-    {
-        return [
-            'single variable' => [
-                'resolvable' => new Resolvable('Content with {{variable}}', []),
-                'expectedVariable' => 'variable',
-            ],
-            'two variables, both missing' => [
-                'resolvable' => new Resolvable('Content with {{variable1}} and {{variable2}}', []),
-                'expectedVariable' => 'variable1',
-            ],
-            'two variables, first missing' => [
-                'resolvable' => new Resolvable(
-                    'Content with {{variable1}} and {{variable2}}',
-                    [
-                        'variable2' => 'bar',
-                    ]
-                ),
-                'expectedVariable' => 'variable1',
-            ],
-            'two variables, second missing' => [
-                'resolvable' => new Resolvable(
-                    'Content with {{variable1}} and {{variable2}}',
-                    [
-                        'variable1' => 'foo',
-                    ]
-                ),
-                'expectedVariable' => 'variable2',
-            ],
-            'two variables, both missing, first allowed to be missing' => [
-                'resolvable' => new Resolvable('Content with {{variable1}} and {{variable2}}', []),
-                'expectedVariable' => 'variable2',
-                'unresolvedVariableFinder' => new UnresolvedVariableFinder([
-                    function (string $variable) {
-                        return 'variable1' === $variable;
-                    },
-                ]),
-            ],
-        ];
-    }
-
     /**
      * @return array<mixed>
      */
@@ -170,9 +110,9 @@ class VariableResolverTest extends TestCase
             ],
             'retain escaped double slashes' => [
                 'resolvable' => new Resolvable('{{ content }}', [
-                    'content' => '\\\\"string\\\\"',
+                    'content' => '\\\"string\\\"',
                 ]),
-                'expectedResolvedTemplate' => '\\\\"string\\\\"',
+                'expectedResolvedTemplate' => '\\\"string\\\"',
             ],
             'resolve resolvable context values' => [
                 'resolvable' => new Resolvable('{{ content }}', [
@@ -237,7 +177,7 @@ class VariableResolverTest extends TestCase
                     ]),
                     new Resolvable('Proceed to room {{ room_number }} to learn {{ subject }}.', [
                         'room_number' => '101',
-                        'subject' => 'French'
+                        'subject' => 'French',
                     ]),
                 ]),
                 'expectedResolvedTemplate' => 'Hello User Name.Proceed to room 101 to learn French.',
@@ -255,7 +195,7 @@ class VariableResolverTest extends TestCase
                     ),
                     new Resolvable('Proceed to room {{ room_number }} to learn {{ subject }}.', [
                         'room_number' => '101',
-                        'subject' => 'French'
+                        'subject' => 'French',
                     ]),
                 ]),
                 'expectedResolvedTemplate' => 'Hello User Name.' . "\n" . 'Proceed to room 101 to learn French.',
@@ -286,9 +226,69 @@ class VariableResolverTest extends TestCase
                         return $resolved . '!';
                     }
                 ),
-                'expectedResolvedTemplate' => 'item1' . "\n" .
-                    'item2' . "\n" .
-                    'item3!',
+                'expectedResolvedTemplate' => 'item1' . "\n"
+                    . 'item2' . "\n"
+                    . 'item3!',
+            ],
+        ];
+    }
+
+    #[DataProvider('resolveThrowsUnresolvedVariableExceptionDataProvider')]
+    public function testResolveThrowsUnresolvedVariableException(
+        ResolvableInterface $resolvable,
+        string $expectedVariable,
+        ?UnresolvedVariableFinder $unresolvedVariableFinder = null
+    ): void {
+        $resolver = new VariableResolver($unresolvedVariableFinder);
+
+        try {
+            $resolver->resolve($resolvable);
+        } catch (UnresolvedVariableException $unresolvedVariableException) {
+            $this->assertSame($expectedVariable, $unresolvedVariableException->getVariable());
+            $this->assertSame($resolvable->getTemplate(), $unresolvedVariableException->getTemplate());
+        }
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public static function resolveThrowsUnresolvedVariableExceptionDataProvider(): array
+    {
+        return [
+            'single variable' => [
+                'resolvable' => new Resolvable('Content with {{variable}}', []),
+                'expectedVariable' => 'variable',
+            ],
+            'two variables, both missing' => [
+                'resolvable' => new Resolvable('Content with {{variable1}} and {{variable2}}', []),
+                'expectedVariable' => 'variable1',
+            ],
+            'two variables, first missing' => [
+                'resolvable' => new Resolvable(
+                    'Content with {{variable1}} and {{variable2}}',
+                    [
+                        'variable2' => 'bar',
+                    ]
+                ),
+                'expectedVariable' => 'variable1',
+            ],
+            'two variables, second missing' => [
+                'resolvable' => new Resolvable(
+                    'Content with {{variable1}} and {{variable2}}',
+                    [
+                        'variable1' => 'foo',
+                    ]
+                ),
+                'expectedVariable' => 'variable2',
+            ],
+            'two variables, both missing, first allowed to be missing' => [
+                'resolvable' => new Resolvable('Content with {{variable1}} and {{variable2}}', []),
+                'expectedVariable' => 'variable2',
+                'unresolvedVariableFinder' => new UnresolvedVariableFinder([
+                    function (string $variable) {
+                        return 'variable1' === $variable;
+                    },
+                ]),
             ],
         ];
     }
