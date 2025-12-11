@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace webignition\Stubble\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use webignition\Stubble\DeciderFactory;
 
@@ -23,9 +24,7 @@ class DeciderFactoryTest extends TestCase
         self::assertTrue($decider());
     }
 
-    /**
-     * @dataProvider createAllowByPatternDeciderDataProvider
-     */
+    #[DataProvider('createAllowByPatternDeciderDataProvider')]
     public function testCreateAllowByPatternDecider(string $pattern, string $variable, bool $expectedResult): void
     {
         $decider = DeciderFactory::createAllowByPatternDecider($pattern);

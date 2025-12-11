@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace webignition\Stubble\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use webignition\Stubble\CollectionItemContext;
 use webignition\Stubble\UnresolvedVariableException;
@@ -16,9 +17,7 @@ use webignition\StubbleResolvable\ResolvedTemplateMutatorResolvable;
 
 class VariableResolverTest extends TestCase
 {
-    /**
-     * @dataProvider resolveDataProvider
-     */
+    #[DataProvider('resolveDataProvider')]
     public function testResolve(
         ResolvableInterface $resolvable,
         string $expectedResolvedTemplate,
@@ -31,9 +30,7 @@ class VariableResolverTest extends TestCase
         self::assertSame($expectedResolvedTemplate, $resolvedContent);
     }
 
-    /**
-     * @dataProvider resolveDataProvider
-     */
+    #[DataProvider('resolveDataProvider')]
     public function testResolveAndIgnoreUnresolvedVariables(
         ResolvableInterface $resolvable,
         string $expectedResolvedTemplate,
@@ -46,9 +43,7 @@ class VariableResolverTest extends TestCase
         self::assertSame($expectedResolvedTemplate, $resolvedContent);
     }
 
-    /**
-     * @dataProvider resolveThrowsUnresolvedVariableExceptionDataProvider
-     */
+    #[DataProvider('resolveThrowsUnresolvedVariableExceptionDataProvider')]
     public function testResolveThrowsUnresolvedVariableException(
         ResolvableInterface $resolvable,
         string $expectedVariable,
