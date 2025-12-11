@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace webignition\Stubble\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use webignition\Stubble\UnresolvedVariableFinder;
 
 class UnresolvedVariableFinderTest extends TestCase
 {
-    /**
-     * @dataProvider findFirstDataProvider
-     */
+    #[DataProvider('findFirstDataProvider')]
     public function testFindFirst(
         UnresolvedVariableFinder $finder,
         string $resolvedTemplate,
@@ -23,7 +22,7 @@ class UnresolvedVariableFinderTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function findFirstDataProvider(): array
+    public static function findFirstDataProvider(): array
     {
         $defaultFinder = new UnresolvedVariableFinder();
 

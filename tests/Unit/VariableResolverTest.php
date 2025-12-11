@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace webignition\Stubble\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use webignition\Stubble\CollectionItemContext;
 use webignition\Stubble\UnresolvedVariableException;
@@ -16,9 +17,7 @@ use webignition\StubbleResolvable\ResolvedTemplateMutatorResolvable;
 
 class VariableResolverTest extends TestCase
 {
-    /**
-     * @dataProvider resolveDataProvider
-     */
+    #[DataProvider('resolveDataProvider')]
     public function testResolve(
         ResolvableInterface $resolvable,
         string $expectedResolvedTemplate,
@@ -31,12 +30,11 @@ class VariableResolverTest extends TestCase
         self::assertSame($expectedResolvedTemplate, $resolvedContent);
     }
 
-    /**
-     * @dataProvider resolveDataProvider
-     */
+    #[DataProvider('resolveDataProvider')]
     public function testResolveAndIgnoreUnresolvedVariables(
         ResolvableInterface $resolvable,
-        string $expectedResolvedTemplate
+        string $expectedResolvedTemplate,
+        ?UnresolvedVariableFinder $unresolvedVariableFinder = null
     ): void {
         $resolver = new VariableResolver();
 
@@ -45,9 +43,7 @@ class VariableResolverTest extends TestCase
         self::assertSame($expectedResolvedTemplate, $resolvedContent);
     }
 
-    /**
-     * @dataProvider resolveThrowsUnresolvedVariableExceptionDataProvider
-     */
+    #[DataProvider('resolveThrowsUnresolvedVariableExceptionDataProvider')]
     public function testResolveThrowsUnresolvedVariableException(
         ResolvableInterface $resolvable,
         string $expectedVariable,
@@ -66,7 +62,7 @@ class VariableResolverTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function resolveThrowsUnresolvedVariableExceptionDataProvider(): array
+    public static function resolveThrowsUnresolvedVariableExceptionDataProvider(): array
     {
         return [
             'single variable' => [
@@ -110,7 +106,7 @@ class VariableResolverTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function resolveDataProvider(): array
+    public static function resolveDataProvider(): array
     {
         $appendNewLineToAllButLastItemMutator = function (string $resolved, ?CollectionItemContext $context) {
             $appendNewLine = $context instanceof CollectionItemContext && false === $context->isLast();
