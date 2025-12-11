@@ -23,7 +23,7 @@ class UnresolvedVariableFinderTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function findFirstDataProvider(): array
+    public static function findFirstDataProvider(): array
     {
         $defaultFinder = new UnresolvedVariableFinder();
 
