@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace webignition\Stubble;
 
-use webignition\StubbleResolvable\ResolvableCollectionInterface;
-use webignition\StubbleResolvable\ResolvableInterface;
-use webignition\StubbleResolvable\ResolvedTemplateMutationInterface;
+use webignition\Stubble\Resolvable\ResolvableCollectionInterface;
+use webignition\Stubble\Resolvable\ResolvableInterface;
+use webignition\Stubble\Resolvable\ResolvedTemplateMutationInterface;
 
 class VariableResolver
 {
