@@ -15,7 +15,7 @@ class VariableResolver
     public function __construct(?UnresolvedVariableFinder $unresolvedVariableFinder = null)
     {
         $this->unresolvedVariableFinder = $unresolvedVariableFinder ?? new UnresolvedVariableFinder([
-            DeciderFactory::createDisallowAllDecider()
+            DeciderFactory::createDisallowAllDecider(),
         ]);
     }
 
@@ -76,7 +76,7 @@ class VariableResolver
 
     private function createCollectionItemContext(
         ResolvableInterface $resolvable,
-        string|\Stringable|ResolvableInterface $item
+        ResolvableInterface|string|\Stringable $item
     ): ?CollectionItemContext {
         if (!$resolvable instanceof ResolvableCollectionInterface) {
             return null;
