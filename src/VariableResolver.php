@@ -58,8 +58,8 @@ class VariableResolver
             $searchVariants = $this->createKeySearchVariants($key);
             $replacements = array_fill(0, count($searchVariants), $value);
 
-            $search = array_merge($search, $searchVariants);
-            $replace = array_merge($replace, $replacements);
+            $search = $this->filterToStringValuesOnly(array_merge($search, $searchVariants));
+            $replace = $this->filterToStringValuesOnly(array_merge($replace, $replacements));
         }
 
         $resolved = (string) str_replace($search, $replace, $template);
@@ -72,6 +72,23 @@ class VariableResolver
         }
 
         return $resolved;
+    }
+
+    /**
+     * @param array<mixed> $data
+     *
+     * @return string[]
+     */
+    private function filterToStringValuesOnly(array $data): array
+    {
+        $filteredData = [];
+        foreach ($data as $value) {
+            if (is_string($value)) {
+                $filteredData[] = $value;
+            }
+        }
+
+        return $filteredData;
     }
 
     private function createCollectionItemContext(
