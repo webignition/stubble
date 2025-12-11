@@ -21,10 +21,10 @@ class UnresolvedVariableFinder
         ];
 
         $this->deciders = array_merge(
-            $this->deciders,
-            array_filter($deciders, function ($item) {
-                return is_callable($item);
-            })
+            [
+                DeciderFactory::createDisallowAllDecider(),
+            ],
+            $deciders
         );
     }
 
